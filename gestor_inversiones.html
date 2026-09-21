@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JF Investments | Robo-Advisor</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; margin: 0; color: #334155; }
+        .navbar { background: #0f172a; color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 24px; font-weight: bold; }
+        .controles-nav { display: flex; gap: 15px; align-items: center; }
+        .btn-login { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-login:hover { background: #2563eb; }
+
+        #pantalla-publica { text-align: center; padding: 100px 20px; }
+        #pantalla-publica h1 { font-size: 48px; color: #0f172a; margin-bottom: 20px; }
+        #pantalla-publica p { font-size: 20px; color: #64748b; max-width: 600px; margin: 0 auto 40px auto; line-height: 1.6; }
+        
+        #pantalla-privada { display: none; max-width: 1200px; margin: 40px auto; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; }
+        .pestanas { display: flex; background: #1e293b; }
+        .pestanas button { flex: 1; background: inherit; color: #94a3b8; border: none; padding: 20px; cursor: pointer; font-size: 16px; font-weight: 600; transition: 0.3s; }
+        .pestanas button.activo { background: #3b82f6; color: white; }
+        
+        .contenido-pestana { display: none; padding: 40px; }
+        .contenido-pestana.activo { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; animation: aparecer 0.4s ease; }
+        
+        .caja-inversion { background: #f1f5f9; padding: 30px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 20px;}
+        .caja-inversion h3 { margin-top: 0; color: #0f172a; }
+        .input-monto { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 16px; box-sizing: border-box; }
+        .btn-invertir { width: 100%; background: #10b981; color: white; border: none; padding: 15px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        
+        .grafica-container { height: 100%; min-height: 400px; border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; }
+
+        .lista-acciones { list-style: none; padding: 0; margin: 0; }
+        .lista-acciones li { padding: 12px 0; border-bottom: 1px solid #cbd5e1; font-size: 15px;}
+        .lista-acciones li:last-child { border-bottom: none; }
+        .badge-ticker { background: #e2e8f0; padding: 4px 8px; border-radius: 4px; font-weight: bold; margin-right: 8px;}
+        select.selector-estilo { width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 15px; font-weight: bold; background: white;}
+
+        @keyframes aparecer { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">JF Investments</div>
+        <div class="controles-nav">
+            <button id="btn-accion-login" class="btn-login" onclick="simularLogin()">Iniciar Sesión</button>
+        </div>
+    </div>
+
+    <div id="pantalla-publica">
+        <h1>Automatiza tu riqueza.</h1>
+        <p>Conecta tu cuenta a nuestros algoritmos matemáticos y permite que nuestra tecnología opere los mercados por ti. Visualiza, invierte y relájate.</p>
+        <button class="btn-login" style="padding: 15px 30px; font-size: 18px;" onclick="simularLogin()">Crear Portafolio Ahora</button>
+    </div>
+
+    <div id="pantalla-privada">
+        <div class="pestanas">
+            <button class="boton-pestana activo" onclick="abrirFondo(event, 'FondoPropio')">Fondo Fórmula Mágica</button>
+            <button class="boton-pestana" onclick="abrirFondo(event, 'FondoGurus')">Fondo Gurús (13F)</button>
+            <button class="boton-pestana" onclick="abrirFondo(event, 'FondoCrypto')">Fondo Crypto</button>
+        </div>
+
+        <!-- Panel 1: Fórmula Mágica -->
+        <div id="FondoPropio" class="contenido-pestana activo">
+            <div>
+                <h2>Estrategia Fundamental</h2>
+                <div class="caja-inversion">
+                    <h3>🏆 Top 3 Actual (Datos en vivo)</h3>
+                    <div id="lista-ganadoras">Cargando...</div>
+                </div>
+                <div class="caja-inversion">
+                    <h3>Sincronizar mi capital virtual</h3>
+                    <input type="number" class="input-monto" placeholder="Ej. $10,000 USD">
+                    <button class="btn-invertir">Comenzar Copia de Inversión</button>
+                </div>
+            </div>
+            <div class="grafica-container">
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({"autosize": true, "symbol": "AMEX:SPY", "interval": "D", "timezone": "Etc/UTC", "theme": "light", "style": "1", "locale": "es", "enable_publishing": false, "container_id": "tv_chart_1"});
+                </script>
+                <div id="tv_chart_1" style="height: 100%;"></div>
+            </div>
+        </div>
+
+        <!-- Panel 2: Fondo Gurús -->
+        <div id="FondoGurus" class="contenido-pestana">
+            <div>
+                <h2>Clonador Institucional (13F)</h2>
+                <div class="caja-inversion">
+                    <h3>Selecciona un Perfil Institucional</h3>
+                    <select id="selector-guru" class="selector-estilo" onchange="mostrarPortafolioGuru()">
+                        <option value="consenso">🧠 Consenso del Top 10 (Recomendado)</option>
+                    </select>
+                    <div id="lista-acciones-gurus">Cargando...</div>
+                </div>
+                <div class="caja-inversion">
+                    <h3>Sincronizar mi capital virtual</h3>
+                    <input type="number" id="monto-gurus" class="input-monto" placeholder="Ej. $10,000 USD">
+                    <button id="btn-invertir-gurus" class="btn-invertir" onclick="ejecutarInversionGurus()">Comenzar Copia de Inversión</button>
+                </div>
+            </div>
+            <div class="grafica-container">
+                <script type="text/javascript">
+                new TradingView.widget({"autosize": true, "symbol": "NASDAQ:QQQ", "interval": "D", "timezone": "Etc/UTC", "theme": "light", "style": "1", "locale": "es", "enable_publishing": false, "container_id": "tv_chart_2"});
+                </script>
+                <div id="tv_chart_2" style="height: 100%;"></div>
+            </div>
+        </div>
+
+        <!-- Panel 3: Fondo Crypto -->
+        <div id="FondoCrypto" class="contenido-pestana">
+            <div>
+                <h2>Fondo Crypto Algorítmico</h2>
+                <div class="caja-inversion" style="text-align: center;">
+                    <h3>🌡️ Sentimiento del Mercado</h3>
+                    <p style="font-size: 13px; color: #64748b; margin-top: -10px;">Índice Fear & Greed (En Vivo)</p>
+                    <div id="indicador-sentimiento">Cargando termómetro...</div>
+                </div>
+                <div class="caja-inversion">
+                    <h3>⚡ Señales del Algoritmo</h3>
+                    <div id="lista-crypto">Cargando señales...</div>
+                </div>
+                <div class="caja-inversion">
+                    <h3>Sincronizar mi capital virtual</h3>
+                    <!-- AQUÍ ESTÁ EL INPUT Y BOTÓN DE CRYPTO YA CONECTADOS -->
+                    <input type="number" id="monto-crypto" class="input-monto" placeholder="Ej. $5,000 USD">
+                    <button id="btn-invertir-crypto" class="btn-invertir" onclick="ejecutarInversionCrypto()">Comenzar Copia de Inversión</button>
+                </div>
+            </div>
+            <div class="grafica-container">
+                <script type="text/javascript">
+                new TradingView.widget({"autosize": true, "symbol": "BINANCE:BTCUSD", "interval": "60", "timezone": "Etc/UTC", "theme": "light", "style": "1", "locale": "es", "enable_publishing": false, "container_id": "tv_chart_3"});
+                </script>
+                <div id="tv_chart_3" style="height: 100%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Carga de datos de la Fórmula Mágica
+        async function cargarDatosAlgoritmo() {
+            try {
+                const respuesta = await fetch('http://127.0.0.1:5000/api/formula-magica');
+                const empresas = await respuesta.json();
+                let html = '<ul class="lista-acciones">';
+                empresas.forEach(emp => { 
+                    html += `<li><span class="badge-ticker">${emp.ticker}</span> <strong>${emp.nombre}</strong><br><span style="color: #64748b; font-size: 13px;">Puntaje: ${emp.puntaje_magico} | ROIC: ${emp.roic}%</span></li>`; 
+                });
+                document.getElementById('lista-ganadoras').innerHTML = html + '</ul>';
+            } catch (error) {}
+        }
+
+        // Carga de datos de Gurús
+        let datosGurusGlobal = {};
+        async function cargarDatosGurus() {
+            try {
+                const respuesta = await fetch('http://127.0.0.1:5000/api/gurus');
+                datosGurusGlobal = await respuesta.json();
+                const selector = document.getElementById('selector-guru');
+                for (let nombreGuru in datosGurusGlobal.gurus) {
+                    let opcion = document.createElement('option');
+                    opcion.value = nombreGuru; opcion.text = nombreGuru;
+                    selector.appendChild(opcion);
+                }
+                mostrarPortafolioGuru();
+            } catch (error) {}
+        }
+
+        function mostrarPortafolioGuru() {
+            const seleccion = document.getElementById('selector-guru').value;
+            let html = '<ul class="lista-acciones">';
+            if (seleccion === 'consenso') {
+                datosGurusGlobal.consenso.forEach(acc => { 
+                    html += `<li><span class="badge-ticker">${acc.ticker}</span> <strong>Coincidencia Fuerte</strong> <br><span style="color: #64748b; font-size: 13px;">Comprada por ${acc.votos} de los 10 fondos</span></li>`; 
+                });
+            } else {
+                datosGurusGlobal.gurus[seleccion].forEach(ticker => { 
+                    html += `<li><span class="badge-ticker">${ticker}</span> Posición reportada (13F)</li>`; 
+                });
+            }
+            document.getElementById('lista-acciones-gurus').innerHTML = html + '</ul>';
+        }
+
+        // Carga de datos Crypto
+        async function cargarDatosCrypto() {
+            try {
+                const respuesta = await fetch('http://127.0.0.1:5000/api/crypto');
+                const datos = await respuesta.json();
+                
+                let htmlSenales = '<ul class="lista-acciones">';
+                datos.senales.forEach(c => {
+                    let color = c.senal.includes('COMPRA') ? '#10b981' : '#f59e0b';
+                    htmlSenales += `<li><span class="badge-ticker">${c.ticker}</span> <strong>${c.nombre}</strong><br><span style="color: ${color}; font-size: 13px; font-weight: bold;">Señal: ${c.senal} | Asignación: ${c.peso}</span></li>`;
+                });
+                document.getElementById('lista-crypto').innerHTML = htmlSenales + '</ul>';
+
+                const sent = datos.sentimiento;
+                const valorNumerico = parseInt(sent.valor);
+                let colorTermometro = '#f59e0b'; 
+                
+                if(valorNumerico <= 45) colorTermometro = '#ef4444'; 
+                else if(valorNumerico >= 55) colorTermometro = '#10b981'; 
+
+                let traduccion = sent.clasificacion.replace('Extreme Fear', 'Miedo Extremo').replace('Fear', 'Miedo').replace('Greed', 'Avaricia').replace('Extreme Greed', 'Avaricia Extrema');
+
+                document.getElementById('indicador-sentimiento').innerHTML = `
+                    <div style="font-size: 42px; font-weight: 900; color: ${colorTermometro}; margin: 10px 0;">
+                        ${sent.valor} <span style="font-size: 20px; color: #94a3b8;">/ 100</span>
+                    </div>
+                    <div style="font-size: 18px; color: #334155;">Estado Actual: <strong style="color: ${colorTermometro};">${traduccion}</strong></div>
+                `;
+            } catch (error) {}
+        }
+
+        // FUNCIÓN: Invertir en Gurús
+        async function ejecutarInversionGurus() {
+            const monto = document.getElementById('monto-gurus').value;
+            if(!monto || monto <= 0) {
+                alert("⚠️ Por favor ingresa un monto válido mayor a 0.");
+                return;
+            }
+            const boton = document.getElementById('btn-invertir-gurus');
+            boton.innerText = "⏳ Conectando con Alpaca...";
+            boton.style.background = "#f59e0b";
+
+            try {
+                const respuesta = await fetch('http://127.0.0.1:5000/api/invertir/gurus', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ capital: monto })
+                });
+                const resultado = await respuesta.json();
+                alert("✅ ÉXITO: " + resultado.mensaje);
+                boton.innerText = "¡Orden Ejecutada!";
+                boton.style.background = "#10b981";
+            } catch (error) {
+                alert("❌ Error de conexión con el servidor Flask.");
+                boton.innerText = "Comenzar Copia de Inversión";
+                boton.style.background = "#10b981";
+            }
+        }
+
+        // FUNCIÓN: Invertir en Crypto (LA QUE NOS FALTABA)
+        async function ejecutarInversionCrypto() {
+            const monto = document.getElementById('monto-crypto').value;
+            if(!monto || monto <= 0) {
+                alert("⚠️ Por favor ingresa un monto válido mayor a 0.");
+                return;
+            }
+            const boton = document.getElementById('btn-invertir-crypto');
+            boton.innerText = "⏳ Ejecutando en mercado Crypto 24/7...";
+            boton.style.background = "#f59e0b";
+
+            try {
+                const respuesta = await fetch('http://127.0.0.1:5000/api/invertir/crypto', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ capital: monto })
+                });
+                
+                const resultado = await respuesta.json();
+                
+                if (respuesta.ok) {
+                    alert("✅ ÉXITO: " + resultado.mensaje);
+                    boton.innerText = "¡Orden Crypto Ejecutada!";
+                    boton.style.background = "#10b981";
+                } else {
+                    alert("❌ ERROR: " + resultado.mensaje);
+                    boton.innerText = "Comenzar Copia de Inversión";
+                    boton.style.background = "#10b981";
+                }
+            } catch (error) {
+                alert("❌ Error de conexión con el servidor Flask.");
+                boton.innerText = "Comenzar Copia de Inversión";
+                boton.style.background = "#10b981";
+            }
+        }
+
+        // Manejo de Interfaz (Pestañas y Login)
+        let sesionIniciada = false;
+        function simularLogin() {
+            let btnAccion = document.getElementById("btn-accion-login");
+            if (!sesionIniciada) {
+                document.getElementById("pantalla-publica").style.display = "none";
+                document.getElementById("pantalla-privada").style.display = "block";
+                btnAccion.innerText = "Cerrar Sesión"; btnAccion.style.background = "#ef4444";
+                sesionIniciada = true;
+                cargarDatosAlgoritmo(); cargarDatosGurus(); cargarDatosCrypto();
+            } else {
+                document.getElementById("pantalla-privada").style.display = "none";
+                document.getElementById("pantalla-publica").style.display = "block";
+                btnAccion.innerText = "Iniciar Sesión"; btnAccion.style.background = "#3b82f6";
+                sesionIniciada = false;
+            }
+        }
+
+        function abrirFondo(evento, nombreFondo) {
+            let i, contenido, botones;
+            contenido = document.getElementsByClassName("contenido-pestana");
+            for (i = 0; i < contenido.length; i++) { contenido[i].style.display = "none"; contenido[i].className = contenido[i].className.replace(" activo", ""); }
+            botones = document.getElementsByClassName("boton-pestana");
+            for (i = 0; i < botones.length; i++) { botones[i].className = botones[i].className.replace(" activo", ""); }
+            document.getElementById(nombreFondo).style.display = "grid";
+            document.getElementById(nombreFondo).className += " activo";
+            evento.currentTarget.className += " activo";
+        }
+    </script>
+</body>
+</html>
