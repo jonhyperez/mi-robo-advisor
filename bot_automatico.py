@@ -3,10 +3,10 @@ import urllib.request
 import json
 import alpaca_trade_api as tradeapi
 from datetime import datetime
-
+import os
 # --- 1. TUS CREDENCIALES DE ALPACA (PAPER TRADING) ---
-API_KEY = "PKXKF4M632HTBHYCGGDDUKGK45"
-SECRET_KEY = "6fSTQUVj1nGFkwAm5661Ye712WMwPhHCVCC4Yx6W9bie"
+API_KEY = os.environ.get("API_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY")
 BASE_URL = "https://paper-api.alpaca.markets"
 
 # Conexión con el broker
