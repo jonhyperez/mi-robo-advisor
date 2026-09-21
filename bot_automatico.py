@@ -28,7 +28,7 @@ def analizar_y_comprar():
         # FASE B: REGLA MATEMÁTICA Y DECISIÓN
         # Para esta prueba comprará si el valor es menor a 100 (comprará de inmediato).
         # En producción real, cambiarás este 100 por 45 (para comprar solo cuando hay Miedo/Oportunidad).
-        if valor_mercado < 100:
+        if valor_mercado < 45:
             capital = 1000.0  # $1,000 USD de tu saldo virtual
             ticker = 'BTC/USD'
             
